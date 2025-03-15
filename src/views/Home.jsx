@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useLocalDB } from '../services/LocalDB';
+import HomeSkeletonLoader from '../components/HomeSkeletonLoader';
 
 const Home = () => {
   const { catalogs } = useLocalDB();
@@ -9,7 +10,7 @@ const Home = () => {
   
   // Efecto para simular la carga de datos y añadir animación de entrada
   useEffect(() => {
-    // Simulamos un tiempo de carga para mostrar el spinner
+    // Simulamos un tiempo de carga para mostrar el skeleton loader
     const timer = setTimeout(() => {
       setIsLoading(false);
       // Activamos la animación después de finalizar la carga
@@ -27,15 +28,9 @@ const Home = () => {
     }
   };
 
+  // Mostrar el skeleton loader mientras se cargan los datos
   if (isLoading) {
-    return (
-      <div className="d-flex flex-column justify-content-center align-items-center my-5">
-        <div className="spinner-border text-primary mb-3" role="status">
-          <span className="visually-hidden">Cargando catálogos...</span>
-        </div>
-        <p className="text-muted">Cargando catálogos...</p>
-      </div>
-    );
+    return <HomeSkeletonLoader cardCount={6} />;
   }
 
   return (

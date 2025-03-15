@@ -4,6 +4,7 @@ import CatalogList from '../components/admin/CatalogList';
 import CatalogForm from '../components/admin/CatalogForm';
 import ImageList from '../components/admin/ImageList';
 import ImageForm from '../components/admin/ImageForm';
+import AdminSkeletonLoader from '../components/AdminSkeletonLoader';
 
 const Admin = () => {
   const location = useLocation();
@@ -12,7 +13,7 @@ const Admin = () => {
   
   // Efecto para simular carga y aplicar animaciones
   useEffect(() => {
-    // Simulamos tiempo de carga para mostrar el spinner
+    // Simulamos tiempo de carga para mostrar el skeleton loader
     const timer = setTimeout(() => {
       setIsLoading(false);
       // Activamos animación después de cargar
@@ -22,12 +23,13 @@ const Admin = () => {
     return () => clearTimeout(timer);
   }, []);
   
-  // CSS para animaciones y transiciones
+  // CSS para animaciones y transiciones - Mejoras para mobile-first
   const styles = `
     .admin-container {
       opacity: 0;
       transform: translateY(10px);
       transition: all 0.4s ease-out;
+      padding: 0 0.75rem;
     }
     
     .admin-container.ready {
@@ -37,6 +39,7 @@ const Admin = () => {
     
     .nav-item-animated {
       transition: all 0.3s ease;
+      margin-right: 0.25rem;
     }
     
     .nav-item-animated:hover {
@@ -47,6 +50,15 @@ const Admin = () => {
       transition: all 0.3s ease;
       border-radius: 0;
       position: relative;
+      font-size: 0.9rem;
+      padding: 0.5rem 0.75rem;
+    }
+    
+    @media (min-width: 768px) {
+      .nav-link {
+        font-size: 1rem;
+        padding: 0.5rem 1rem;
+      }
     }
     
     .nav-link::after {
@@ -72,6 +84,14 @@ const Admin = () => {
     .admin-title {
       position: relative;
       display: inline-block;
+      font-size: 1.25rem;
+      margin-right: 0.5rem;
+    }
+    
+    @media (min-width: 768px) {
+      .admin-title {
+        font-size: 1.5rem;
+      }
     }
     
     .admin-title::after {
@@ -93,6 +113,14 @@ const Admin = () => {
       transition: all 0.3s ease;
       overflow: hidden;
       position: relative;
+      font-size: 0.85rem;
+      padding: 0.375rem 0.75rem;
+    }
+    
+    @media (min-width: 768px) {
+      .btn-home {
+        font-size: 0.9rem;
+      }
     }
     
     .btn-home::before {
@@ -129,18 +157,59 @@ const Admin = () => {
         display: none;
       }
     }
+    
+    .route-indicator {
+      background-color: #f8f9fa;
+      border-radius: 0.375rem;
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      margin-bottom: 1rem;
+      display: flex;
+      align-items: center;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+    
+    .route-indicator i {
+      margin-right: 0.5rem;
+      color: #6c757d;
+    }
+    
+    .admin-content {
+      animation: fadeIn 0.5s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    /* Ajustes adicionales para componentes anidados */
+    .table-responsive {
+      border-radius: 0.375rem;
+      overflow: hidden;
+    }
+    
+    .card {
+      border-radius: 0.5rem;
+      overflow: hidden;
+      box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
   `;
   
   if (isLoading) {
-    return (
-      <div className="d-flex flex-column justify-content-center align-items-center my-5 py-5">
-        <div className="spinner-border text-primary mb-3" role="status">
-          <span className="visually-hidden">Cargando panel de administración...</span>
-        </div>
-        <p className="text-muted">Cargando panel de administración...</p>
-      </div>
-    );
+    return <AdminSkeletonLoader />;
   }
+  
+  // Función para obtener el texto del indicador de ruta
+  const getRouteIndicatorText = () => {
+    if (location.pathname.includes('/catalogs/create')) return 'Crear catálogo';
+    if (location.pathname.includes('/catalogs/edit')) return 'Editar catálogo';
+    if (location.pathname.includes('/images/create')) return 'Añadir imagen';
+    if (location.pathname.includes('/images/edit')) return 'Editar imagen';
+    if (location.pathname.includes('/images') && !location.pathname.includes('/create') && !location.pathname.includes('/edit')) return 'Gestión de imágenes';
+    if (location.pathname === '/admin/catalogs' || location.pathname === '/admin') return 'Listado de catálogos';
+    return 'Panel de Administración';
+  };
   
   return (
     <div className={`admin-container ${pageReady ? 'ready' : ''}`}>
@@ -149,13 +218,14 @@ const Admin = () => {
       <div className="d-flex justify-content-between align-items-center mb-4 admin-header">
         <h2 className="admin-title mb-0">Panel de Administración</h2>
         <Link to="/" className="btn btn-outline-primary btn-home">
-          <i className="bi bi-house-fill me-2"></i>
-          Ir al inicio
+          <i className="bi bi-house-fill me-1"></i>
+          <span className="d-none d-sm-inline">Ir al inicio</span>
+          <span className="d-inline d-sm-none">Inicio</span>
         </Link>
       </div>
       
       {/* Navegación de admin - Mobile optimizada */}
-      <div className="admin-tabs mb-4">
+      <div className="admin-tabs mb-3">
         <ul className="nav nav-tabs border-bottom">
           <li className="nav-item nav-item-animated">
             <Link 
@@ -170,22 +240,14 @@ const Admin = () => {
         </ul>
       </div>
       
-      {/* Indicador de ruta actual - visible solo en móvil */}
-      <div className="d-md-none mb-3">
-        <div className="bg-light rounded p-2 text-muted small">
-          <i className="bi bi-geo-alt-fill me-1"></i>
-          {location.pathname.includes('/catalogs/create') && 'Crear catálogo'}
-          {location.pathname.includes('/catalogs/edit') && 'Editar catálogo'}
-          {location.pathname.includes('/images/create') && 'Añadir imagen'}
-          {location.pathname.includes('/images/edit') && 'Editar imagen'}
-          {location.pathname.includes('/images') && !location.pathname.includes('/create') && !location.pathname.includes('/edit') && 'Gestión de imágenes'}
-          {location.pathname === '/admin/catalogs' && 'Listado de catálogos'}
-          {location.pathname === '/admin' && 'Listado de catálogos'}
-        </div>
+      {/* Indicador de ruta actual - mejorado para todos los dispositivos */}
+      <div className="route-indicator mb-3">
+        <i className="bi bi-geo-alt-fill"></i>
+        <span>{getRouteIndicatorText()}</span>
       </div>
       
       {/* Contenido principal con animación de entrada */}
-      <div className="admin-content">
+      <div className="admin-content pb-4">
         <Routes>
           <Route path="/" element={<Navigate to="/admin/catalogs" />} />
           <Route path="catalogs" element={<CatalogList />} />

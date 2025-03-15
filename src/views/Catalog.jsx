@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { useLocalDB } from '../services/LocalDB';
+import CatalogSkeletonLoader from '../components/CatalogSkeletonLoader';
 
 const Catalog = () => {
   const { id } = useParams();
@@ -8,6 +9,7 @@ const Catalog = () => {
   const [catalog, setCatalog] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [imageLoading, setImageLoading] = useState(true);
   
   useEffect(() => {
     const loadCatalog = () => {
@@ -20,6 +22,14 @@ const Catalog = () => {
     
     loadCatalog();
   }, [id, getCatalog]);
+  
+  // Este efecto se activa cada vez que cambia la imagen actual
+  useEffect(() => {
+    // Resetear el estado de carga de imagen
+    if (catalog && catalog.images && catalog.images.length > 0) {
+      setImageLoading(true);
+    }
+  }, [currentImageIndex, catalog]);
   
   if (loading) {
     return (
@@ -80,6 +90,11 @@ const Catalog = () => {
   
   // Obtener la imagen actual
   const currentImage = images[currentImageIndex];
+
+  // Manejador para cuando la imagen termina de cargar
+  const handleImageLoad = () => {
+    setImageLoading(false);
+  };
   
   return (
     <div className="container-fluid px-0">
@@ -93,8 +108,11 @@ const Catalog = () => {
         </div>
       </div>
       
+      {/* Mostrar skeleton loader mientras la imagen está cargando */}
+      {imageLoading && <CatalogSkeletonLoader />}
+      
       {/* Contenedor principal del producto - Mobile First */}
-      <div className="card border-0 mb-3 mx-2">
+      <div className={`card border-0 mb-3 mx-2 ${imageLoading ? 'd-none' : ''}`}>
         {/* Imagen del producto */}
         <div className="position-relative">
           <img 
@@ -102,6 +120,8 @@ const Catalog = () => {
             alt={currentImage.name}
             className="img-fluid w-100"
             style={{ objectFit: 'contain', maxHeight: '70vh' }}
+            onLoad={handleImageLoad}
+            onError={() => setImageLoading(false)} // Maneja error de carga
           />
           
           {/* Botones de navegación */}
@@ -131,23 +151,27 @@ const Catalog = () => {
         </div>
       </div>
       
-      {/* Paginación - Indicadores */}
-      <div className="d-flex justify-content-center mb-3">
-        {images.map((_, index) => (
-          <button 
-            key={index} 
-            className={`btn ${index === currentImageIndex ? 'btn-primary' : 'btn-outline-secondary'} btn-sm mx-1 p-0 rounded-circle`}
-            onClick={() => setCurrentImageIndex(index)}
-            style={{ width: '10px', height: '10px' }}
-            aria-label={`Imagen ${index + 1}`}
-          ></button>
-        ))}
-      </div>
-      
-      {/* Contador */}
-      <div className="text-center text-muted small mb-4">
-        {currentImageIndex + 1} / {totalImages}
-      </div>
+      {/* Paginación - Indicadores (solo visible cuando la imagen está cargada) */}
+      {!imageLoading && (
+        <>
+          <div className="d-flex justify-content-center mb-3">
+            {images.map((_, index) => (
+              <button 
+                key={index} 
+                className={`btn ${index === currentImageIndex ? 'btn-primary' : 'btn-outline-secondary'} btn-sm mx-1 p-0 rounded-circle`}
+                onClick={() => setCurrentImageIndex(index)}
+                style={{ width: '10px', height: '10px' }}
+                aria-label={`Imagen ${index + 1}`}
+              ></button>
+            ))}
+          </div>
+          
+          {/* Contador */}
+          <div className="text-center text-muted small mb-4">
+            {currentImageIndex + 1} / {totalImages}
+          </div>
+        </>
+      )}
     </div>
   );
 };
