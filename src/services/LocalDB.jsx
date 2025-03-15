@@ -1,122 +1,210 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, set, get, push, update, remove, onValue } from "firebase/database";
 
-// Contexto para la base de datos local
-const LocalDBContext = createContext();
-
-// Datos iniciales de ejemplo
-const initialData = {
-  catalogs: [
-    {
-      id: 'cat1',
-      name: 'Catálogo de Verano',
-      images: [
-        { id: 'img1', name: 'Camiseta Floral', price: 25.99, imageUrl: 'https://via.placeholder.com/300x400?text=Camiseta+Floral' },
-        { id: 'img2', name: 'Shorts de Playa', price: 19.99, imageUrl: 'https://via.placeholder.com/300x400?text=Shorts+de+Playa' }
-      ]
-    },
-    {
-      id: 'cat2',
-      name: 'Catálogo de Invierno',
-      images: [
-        { id: 'img3', name: 'Abrigo Elegante', price: 89.99, imageUrl: 'https://via.placeholder.com/300x400?text=Abrigo+Elegante' },
-        { id: 'img4', name: 'Bufanda de Lana', price: 15.99, imageUrl: 'https://via.placeholder.com/300x400?text=Bufanda+de+Lana' }
-      ]
-    }
-  ]
+// Configuración de Firebase
+const firebaseConfig = {
+  apiKey: "AIzaSyCY9zWUaRYF6ZhJeuIzlu29u3wfj-bg2qg",
+  authDomain: "catalogosapp-9aaf3.firebaseapp.com",
+  databaseURL: "https://catalogosapp-9aaf3-default-rtdb.firebaseio.com",
+  projectId: "catalogosapp-9aaf3",
+  storageBucket: "catalogosapp-9aaf3.firebasestorage.app",
+  messagingSenderId: "230047034935",
+  appId: "1:230047034935:web:15dc1cea4acb936e9719b2"
 };
+
+// Inicializar Firebase
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
+// Contexto para la base de datos
+const LocalDBContext = createContext();
 
 export const LocalDBProvider = ({ children }) => {
   // Estado para almacenar los datos
-  const [data, setData] = useState(() => {
-    // Intentar cargar datos desde localStorage
-    const savedData = localStorage.getItem('catalogsAppData');
-    return savedData ? JSON.parse(savedData) : initialData;
+  const [data, setData] = useState({
+    catalogs: []
   });
+  const [isLoading, setIsLoading] = useState(true);
+  
+  // Verificar la estructura de datos en Firebase
+  const checkFirebaseData = async () => {
+    try {
+      // Solo verificamos que exista la referencia de 'catalogs'
+      const catalogsRef = ref(database, 'catalogs');
+      const snapshot = await get(catalogsRef);
+      
+      // Si no existe la estructura, creamos un nodo vacío
+      if (!snapshot.exists()) {
+        await set(ref(database, 'catalogs'), {});
+        console.log('Se creó la estructura inicial en Firebase');
+      }
+      
+      return [];
+    } catch (error) {
+      console.error('Error al verificar datos en Firebase:', error);
+      return [];
+    }
+  };
 
-  // Guardar cambios en localStorage
+  // Cargar datos desde Firebase al iniciar
   useEffect(() => {
-    localStorage.setItem('catalogsAppData', JSON.stringify(data));
-  }, [data]);
-
-  // CRUD para catálogos
-  const createCatalog = (catalog) => {
-    const newCatalog = {
-      ...catalog,
-      id: `cat-${Date.now()}`,
-      images: []
+    const loadData = async () => {
+      setIsLoading(true);
+      try {
+        // Solo verificamos la estructura, sin borrar datos
+        await checkFirebaseData();
+        
+        // Escuchar cambios en tiempo real
+        const catalogsRef = ref(database, 'catalogs');
+        const unsubscribe = onValue(catalogsRef, (snapshot) => {
+          if (snapshot.exists()) {
+            const catalogsArray = [];
+            snapshot.forEach((childSnapshot) => {
+              catalogsArray.push({
+                id: childSnapshot.key,
+                ...childSnapshot.val()
+              });
+            });
+            setData({ catalogs: catalogsArray });
+          } else {
+            setData({ catalogs: [] });
+          }
+          setIsLoading(false);
+        });
+        
+        // Limpieza al desmontar
+        return () => unsubscribe();
+      } catch (error) {
+        console.error('Error al cargar datos de Firebase:', error);
+        setIsLoading(false);
+      }
     };
     
-    setData(prevData => ({
-      ...prevData,
-      catalogs: [...prevData.catalogs, newCatalog]
-    }));
-    
-    return newCatalog;
+    loadData();
+  }, []);
+
+  // CRUD para catálogos
+  const createCatalog = async (catalog) => {
+    try {
+      const catalogsRef = ref(database, 'catalogs');
+      const newCatalogRef = push(catalogsRef);
+      const newCatalog = {
+        ...catalog,
+        id: newCatalogRef.key,
+        images: []
+      };
+      
+      await set(newCatalogRef, newCatalog);
+      return newCatalog;
+    } catch (error) {
+      console.error('Error al crear catálogo:', error);
+      throw error;
+    }
   };
 
-  const updateCatalog = (id, updates) => {
-    setData(prevData => ({
-      ...prevData,
-      catalogs: prevData.catalogs.map(catalog => 
-        catalog.id === id ? { ...catalog, ...updates } : catalog
-      )
-    }));
+  const updateCatalog = async (id, updates) => {
+    try {
+      const catalogRef = ref(database, `catalogs/${id}`);
+      await update(catalogRef, updates);
+    } catch (error) {
+      console.error('Error al actualizar catálogo:', error);
+      throw error;
+    }
   };
 
-  const deleteCatalog = (id) => {
-    setData(prevData => ({
-      ...prevData,
-      catalogs: prevData.catalogs.filter(catalog => catalog.id !== id)
-    }));
+  const deleteCatalog = async (id) => {
+    try {
+      const catalogRef = ref(database, `catalogs/${id}`);
+      await remove(catalogRef);
+    } catch (error) {
+      console.error('Error al eliminar catálogo:', error);
+      throw error;
+    }
   };
 
   // CRUD para imágenes
-  const createImage = (catalogId, image) => {
-    const newImage = {
-      ...image,
-      id: `img-${Date.now()}`
-    };
-    
-    setData(prevData => ({
-      ...prevData,
-      catalogs: prevData.catalogs.map(catalog => 
-        catalog.id === catalogId
-          ? { ...catalog, images: [...catalog.images, newImage] }
-          : catalog
-      )
-    }));
-    
-    return newImage;
+  const createImage = async (catalogId, image) => {
+    try {
+      // Generar ID único para la imagen
+      const imageId = `img-${Date.now()}`;
+      const newImage = {
+        ...image,
+        id: imageId
+      };
+      
+      // Obtener el catálogo directamente de Firebase
+      const catalogRef = ref(database, `catalogs/${catalogId}`);
+      const snapshot = await get(catalogRef);
+      
+      if (!snapshot.exists()) {
+        throw new Error('Catálogo no encontrado');
+      }
+      
+      const catalogData = snapshot.val();
+      
+      // Obtener imágenes actuales o inicializar array vacío
+      const currentImages = catalogData.images || [];
+      const updatedImages = [...currentImages, newImage];
+      
+      // Actualizar en Firebase
+      await update(catalogRef, {
+        images: updatedImages
+      });
+      
+      return newImage;
+    } catch (error) {
+      console.error('Error al crear imagen:', error);
+      throw error;
+    }
   };
 
-  const updateImage = (catalogId, imageId, updates) => {
-    setData(prevData => ({
-      ...prevData,
-      catalogs: prevData.catalogs.map(catalog => 
-        catalog.id === catalogId
-          ? {
-              ...catalog,
-              images: catalog.images.map(image => 
-                image.id === imageId ? { ...image, ...updates } : image
-              )
-            }
-          : catalog
-      )
-    }));
+  const updateImage = async (catalogId, imageId, updates) => {
+    try {
+      // Obtener el catálogo directamente de Firebase para datos actualizados
+      const catalogRef = ref(database, `catalogs/${catalogId}`);
+      const snapshot = await get(catalogRef);
+      
+      if (!snapshot.exists()) {
+        throw new Error('Catálogo no encontrado');
+      }
+      
+      const catalogData = snapshot.val();
+      const images = catalogData.images || [];
+      const updatedImages = images.map(img => 
+        img.id === imageId ? { ...img, ...updates } : img
+      );
+      
+      await update(catalogRef, {
+        images: updatedImages
+      });
+    } catch (error) {
+      console.error('Error al actualizar imagen:', error);
+      throw error;
+    }
   };
 
-  const deleteImage = (catalogId, imageId) => {
-    setData(prevData => ({
-      ...prevData,
-      catalogs: prevData.catalogs.map(catalog => 
-        catalog.id === catalogId
-          ? {
-              ...catalog,
-              images: catalog.images.filter(image => image.id !== imageId)
-            }
-          : catalog
-      )
-    }));
+  const deleteImage = async (catalogId, imageId) => {
+    try {
+      // Obtener el catálogo directamente de Firebase para datos actualizados
+      const catalogRef = ref(database, `catalogs/${catalogId}`);
+      const snapshot = await get(catalogRef);
+      
+      if (!snapshot.exists()) {
+        throw new Error('Catálogo no encontrado');
+      }
+      
+      const catalogData = snapshot.val();
+      const images = catalogData.images || [];
+      const updatedImages = images.filter(img => img.id !== imageId);
+      
+      await update(catalogRef, {
+        images: updatedImages
+      });
+    } catch (error) {
+      console.error('Error al eliminar imagen:', error);
+      throw error;
+    }
   };
   
   // Consultas
@@ -132,6 +220,7 @@ export const LocalDBProvider = ({ children }) => {
   const value = {
     // Datos
     catalogs: data.catalogs,
+    isLoading,
     // Operaciones CRUD
     createCatalog,
     updateCatalog,

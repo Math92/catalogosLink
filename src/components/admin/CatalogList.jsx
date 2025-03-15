@@ -41,7 +41,7 @@ const CatalogList = () => {
                   <td className="align-middle">{catalog.name}</td>
                   <td className="text-center align-middle">
                     <span className="badge bg-primary rounded-pill">
-                      {catalog.images.length}
+                      {catalog.images && catalog.images.length || 0}
                     </span>
                   </td>
                   <td>

@@ -40,6 +40,9 @@ const ImageList = () => {
     }
   };
   
+  // Asegurarse de que catalog.images exista
+  const images = catalog.images || [];
+  
   return (
     <div>
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -56,7 +59,7 @@ const ImageList = () => {
         </div>
       </div>
       
-      {catalog.images.length === 0 ? (
+      {images.length === 0 ? (
         <div className="alert alert-info">
           Este catálogo no tiene imágenes. Agrega una nueva usando el botón de arriba.
         </div>
@@ -72,7 +75,7 @@ const ImageList = () => {
               </tr>
             </thead>
             <tbody>
-              {catalog.images.map(image => (
+              {images.map(image => (
                 <tr key={image.id}>
                   <td>
                     <img 

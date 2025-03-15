@@ -167,36 +167,39 @@ const CatalogForm = () => {
   };
   
   // Manejar envío del formulario
-  const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
     e.preventDefault();
-    
+      
     if (!validateForm()) return;
-    
+      
     setIsSubmitting(true);
-    
+      
     try {
       let catalogId;
-      
+        
       // Crear o actualizar catálogo
       if (isEditMode) {
-        updateCatalog(id, { name: formData.name });
+        await updateCatalog(id, { name: formData.name });
         catalogId = id;
       } else {
-        const newCatalog = createCatalog({ name: formData.name });
+        const newCatalog = await createCatalog({ name: formData.name });
         catalogId = newCatalog.id;
+        
+        // Esperar brevemente para que Firebase actualice los datos
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
-      
+        
       // Crear imágenes que tengan los tres campos completos
       for (let i = 0; i < imageUrls.length; i++) {
         if (imageUrls[i].trim() && imageNames[i].trim() && imagePrices[i].trim()) {
-          createImage(catalogId, {
+          await createImage(catalogId, {
             name: imageNames[i],
             price: parseFloat(imagePrices[i]),
             imageUrl: imageUrls[i]
           });
         }
       }
-      
+        
       // Redirigir a la lista de catálogos
       navigate('/admin/catalogs');
     } catch (error) {

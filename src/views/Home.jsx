@@ -22,7 +22,7 @@ const Home = () => {
               <div className="card-body">
                 <h5 className="card-title">{catalog.name}</h5>
                 <p className="card-text text-muted">
-                  {catalog.images.length} {catalog.images.length === 1 ? 'imagen' : 'imágenes'}
+                  {catalog.images && catalog.images.length || 0} {(catalog.images && catalog.images.length === 1) ? 'imagen' : 'imágenes'}
                 </p>
               </div>
               <div className="card-footer bg-white border-top-0">

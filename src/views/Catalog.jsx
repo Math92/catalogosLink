@@ -46,12 +46,15 @@ const Catalog = () => {
     );
   }
   
+  // Asegurarse de que catalog.images exista
+  const images = catalog.images || [];
+  
   // Cálculos para la paginación
-  const totalImages = catalog.images.length;
+  const totalImages = images.length;
   const totalPages = Math.ceil(totalImages / imagesPerPage);
   const indexOfLastImage = currentPage * imagesPerPage;
   const indexOfFirstImage = indexOfLastImage - imagesPerPage;
-  const currentImages = catalog.images.slice(indexOfFirstImage, indexOfLastImage);
+  const currentImages = images.slice(indexOfFirstImage, indexOfLastImage);
   
   // Cambiar de página
   const paginate = (pageNumber) => setCurrentPage(pageNumber);
