@@ -1,0 +1,69 @@
+/* Estilos personalizados para la aplicación de Catálogos */
+
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  }
+  
+  /* Animación para las tarjetas de catálogo */
+  .card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Estilos para la paginación */
+  .pagination .page-link {
+    color: #0d6efd;
+  }
+  
+  .pagination .page-item.active .page-link {
+    background-color: #0d6efd;
+    border-color: #0d6efd;
+  }
+  
+  /* Personalización del header */
+  header {
+    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Personalización de las tablas */
+  .table-responsive {
+    border-radius: 0.25rem;
+    overflow: hidden;
+  }
+  
+  /* Animaciones para las galerías */
+  .gallery-item {
+    transition: all 0.3s ease;
+  }
+  
+  .gallery-item:hover {
+    transform: scale(1.02);
+  }
+  
+  /* Personalización de botones */
+  .btn-primary {
+    background-color: #0d6efd;
+  }
+  
+  .btn-success {
+    background-color: #198754;
+  }
+  
+  .btn-danger {
+    background-color: #dc3545;
+  }
+  
+  .btn-warning {
+    background-color: #ffc107;
+    color: #212529;
+  }
+  
+  /* Animación para la barra de progreso */
+  .progress-bar {
+    transition: width 0.5s ease;
+  }
