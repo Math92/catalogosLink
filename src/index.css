@@ -1,69 +1,189 @@
-/* Estilos personalizados para la aplicación de Catálogos */
+/* Updated index.css with color palette from the logo */
 
+:root {
+  /* Color palette extracted from logo with light pink as primary */
+  --brand-pink: #f8a4bc; /* Light pink from the logo - PRIMARY */
+  --brand-pink-dark: #e6799c; /* Darker pink for hover states */
+  --brand-blue: #1c75bc; /* Blue accent from the logo */
+  --brand-light-blue: #29abe2; /* Light blue accent from the logo */
+  --brand-dark: #2b2b2b;
+  --brand-light: #ffffff;
+  --brand-gray: #f0f0f0;
+}
+
+/* Body styles and fixes for fixed header */
 body {
-    background-color: #f8f9fa;
-    font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-  }
-  
-  /* Animación para las tarjetas de catálogo */
-  .card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Estilos para la paginación */
-  .pagination .page-link {
-    color: #0d6efd;
-  }
-  
-  .pagination .page-item.active .page-link {
-    background-color: #0d6efd;
-    border-color: #0d6efd;
-  }
-  
-  /* Personalización del header */
-  header {
-    box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-  }
-  
-  /* Personalización de las tablas */
-  .table-responsive {
-    border-radius: 0.25rem;
-    overflow: hidden;
-  }
-  
-  /* Animaciones para las galerías */
-  .gallery-item {
-    transition: all 0.3s ease;
-  }
-  
-  .gallery-item:hover {
-    transform: scale(1.02);
-  }
-  
-  /* Personalización de botones */
-  .btn-primary {
-    background-color: #0d6efd;
-  }
-  
-  .btn-success {
-    background-color: #198754;
-  }
-  
-  .btn-danger {
-    background-color: #dc3545;
-  }
-  
-  .btn-warning {
-    background-color: #ffc107;
-    color: #212529;
-  }
-  
-  /* Animación para la barra de progreso */
-  .progress-bar {
-    transition: width 0.5s ease;
-  }
+  background-color: var(--brand-gray);
+  font-family: 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  padding-top: 70px; /* Compensate for fixed header */
+}
+
+/* Custom brand color classes */
+.text-brand-pink {
+  color: var(--brand-pink) !important;
+}
+
+.bg-brand-pink {
+  background-color: var(--brand-pink) !important;
+}
+
+.btn-brand-pink {
+  background-color: var(--brand-pink);
+  border-color: var(--brand-pink);
+  color: var(--brand-light);
+}
+
+.btn-brand-pink:hover {
+  background-color: var(--brand-pink-dark);
+  border-color: var(--brand-pink-dark);
+  color: var(--brand-light);
+}
+
+.btn-outline-brand-pink {
+  color: var(--brand-pink);
+  border-color: var(--brand-pink);
+}
+
+.btn-outline-brand-pink:hover {
+  background-color: var(--brand-pink);
+  color: var(--brand-light);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Override Bootstrap colors */
+.btn-primary {
+  background-color: var(--brand-pink);
+  border-color: var(--brand-pink);
+}
+
+.btn-primary:hover {
+  background-color: var(--brand-pink-dark);
+  border-color: var(--brand-pink-dark);
+}
+
+.btn-outline-primary {
+  color: var(--brand-pink);
+  border-color: var(--brand-pink);
+}
+
+.btn-outline-primary:hover {
+  background-color: var(--brand-pink);
+  border-color: var(--brand-pink);
+}
+
+.text-primary {
+  color: var(--brand-pink) !important;
+}
+
+.bg-primary {
+  background-color: var(--brand-pink) !important;
+}
+
+/* Fixed header styles */
+header {
+  transition: all 0.3s ease;
+  z-index: 1030;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-bottom: 3px solid var(--brand-pink);
+}
+
+/* Logo image enhancements */
+header img {
+  transition: transform 0.3s ease;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+header img:hover {
+  transform: scale(1.05);
+}
+
+/* Card styles */
+.card {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Pagination styles */
+.pagination .page-link {
+  color: var(--brand-pink);
+}
+
+.pagination .page-item.active .page-link {
+  background-color: var(--brand-pink);
+  border-color: var(--brand-pink);
+}
+
+/* Button styling */
+.btn {
+  transition: all 0.3s ease;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Table styling */
+.table-responsive {
+  border-radius: 0.25rem;
+  overflow: hidden;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.05);
+}
+
+.table-dark {
+  background-color: var(--brand-pink);
+  color: var(--brand-light);
+}
+
+/* Form controls */
+.form-control:focus {
+  border-color: var(--brand-pink);
+  box-shadow: 0 0 0 0.25rem rgba(248, 164, 188, 0.25);
+}
+
+/* Footer styles to add to your index.css */
+
+footer {
+  border-top: 3px solid var(--brand-pink);
+  margin-top: auto; /* Push to bottom if content is short */
+}
+
+.social-link {
+  text-decoration: none;
+  transition: all 0.3s ease;
+  padding: 10px;
+  border-radius: 8px;
+}
+
+.social-link:hover {
+  transform: translateY(-5px);
+  background-color: rgba(248, 164, 188, 0.1);
+}
+
+.social-link:hover i {
+  transform: scale(1.2);
+}
+
+.social-link i {
+  transition: transform 0.3s ease;
+}
+
+/* Make sure the footer stays at the bottom */
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Add space between content and footer */
+main {
+  flex: 1;
+  padding-bottom: 2rem;
+}

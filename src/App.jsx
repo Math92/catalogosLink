@@ -1,7 +1,7 @@
-// App.jsx con corrección para acceso a la ruta admin
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header';
+import Footer from './components/Footer';
 import Home from './views/Home';
 import Catalog from './views/Catalog';
 import Admin from './views/Admin';
@@ -11,16 +11,17 @@ const App = () => {
   return (
     <LocalDBProvider>
       <Router>
-        <div className="container-fluid p-0">
+        <div className="d-flex flex-column min-vh-100">
           <Header />
-          <div className="container py-4">
+          <main className="container py-4 flex-grow-1">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/catalog/:id" element={<Catalog />} />
               <Route path="/admin/*" element={<Admin />} />
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
-          </div>
+          </main>
+          <Footer />
         </div>
       </Router>
     </LocalDBProvider>
