@@ -1,8 +1,1 @@
-[
-    {
-      "origin": ["*"],
-      "method": ["GET"],
-      "responseHeader": ["Content-Type", "Cache-Control"],
-      "maxAgeSeconds": 3600
-    }
-  ]
+[{"AllowedHeaders":["*"],"AllowedMethods":["GET","HEAD"],"AllowedOrigins":["*"],"ExposeHeaders":["ETag","Content-Length","Content-Type"],"MaxAgeSeconds":3600}]
