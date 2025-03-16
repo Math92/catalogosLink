@@ -1,0 +1,140 @@
+.fade-container {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+    min-height: calc(100vh - 130px); /* Ajusta al viewport menos header y footer */
+    padding-bottom: 10px; /* Pequeño padding para evitar que toque el footer */
+  }
+  
+  .fade-in {
+    opacity: 1;
+  }
+  
+  .catalog-card {
+    transition: all 0.3s ease;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  }
+  
+  .catalog-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+  }
+  
+  .catalog-card-body {
+    transition: background-color 0.3s ease;
+  }
+  
+  .catalog-card:hover .catalog-card-body {
+    background-color: #f8f9fa;
+  }
+  
+  .catalog-image {
+    height: 180px;
+    object-fit: contain;
+    background-color: #f8f9fa;
+    transition: transform 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .catalog-card:hover .catalog-image {
+    transform: scale(1.02);
+  }
+  
+  .catalog-image img {
+    max-height: 100%;
+    max-width: 100%;
+    object-fit: contain;
+  }
+  
+  .image-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 180px;
+    width: 100%;
+    color: #6c757d;
+    background-color: #f8f9fa;
+  }
+  
+  .image-placeholder i {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  @media (max-width: 767.98px) {
+    .catalog-image {
+      height: 140px;
+    }
+    
+    .image-placeholder {
+      height: 140px;
+    }
+  }
+  
+  .btn-view {
+    transition: all 0.3s ease;
+    transform: translateY(0);
+  }
+  
+  .catalog-card:hover .btn-view {
+    background-color: #0b5ed7;
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px rgba(13, 110, 253, 0.3);
+  }
+  
+  .card-clicked {
+    transform: scale(0.98) !important;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+  }
+  
+  .catalog-badge {
+    transition: all 0.3s ease;
+    transform: scale(1);
+  }
+  
+  .catalog-card:hover .catalog-badge {
+    transform: scale(1.1);
+    background-color: #0d6efd !important;
+  }
+  
+  @media (max-width: 767.98px) {
+    .catalog-card {
+      margin-bottom: 1rem;
+    }
+  }
+  
+  /* Evitar el parpadeo de las imágenes */
+  .catalog-image.loaded {
+    opacity: 1;
+  }
+  
+  .catalog-image.loading {
+    opacity: 0.7;
+    background: linear-gradient(to right, #f0f0f0 4%, #e0e0e0 25%, #f0f0f0 36%);
+    background-size: 1000px 100%;
+    animation: shimmer 2s infinite linear;
+  }
+  
+  @keyframes shimmer {
+    0% {
+      background-position: -1000px 0;
+    }
+    100% {
+      background-position: 1000px 0;
+    }
+  }
+
+  @media (max-width: 767.98px) {
+    .catalog-card {
+        margin-bottom: 1rem;
+    }
+    
+    .fade-container {
+        padding-bottom: 60px; /* Espacio adicional para dispositivos móviles */
+    }
+}

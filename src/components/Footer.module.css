@@ -1,0 +1,35 @@
+.compact-footer {
+    border-top: 3px solid var(--brand-pink);
+    padding: 0.75rem 0;
+    margin-top: 0;
+    background-color: white;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .social-link {
+    text-decoration: none;
+    transition: all 0.3s ease;
+    padding: 8px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .social-link:hover {
+    transform: translateY(-3px);
+    background-color: rgba(248, 164, 188, 0.1);
+  }
+  
+  .social-icon {
+    font-size: 1.75rem;
+    transition: transform 0.3s ease;
+  }
+  
+  .social-link:hover .social-icon {
+    transform: scale(1.15);
+  }

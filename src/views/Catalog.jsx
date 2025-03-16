@@ -4,6 +4,7 @@ import { useLocalDB } from '../services/LocalDB';
 import CatalogSkeletonLoader from '../components/CatalogSkeletonLoader';
 import AwsImage from '../components/AwsImage';
 import { useSwipeable } from 'react-swipeable';
+import styles from './Catalog.module.css';
 
 const Catalog = () => {
     const { id } = useParams();
@@ -42,6 +43,15 @@ const Catalog = () => {
             return false;
         }
     });
+
+    // Agregar clase al body para evitar scroll
+    useEffect(() => {
+        document.body.style.overflow = 'hidden';
+        
+        return () => {
+            document.body.style.overflow = '';
+        };
+    }, []);
 
     useEffect(() => {
         const loadCatalog = () => {
@@ -136,7 +146,7 @@ const Catalog = () => {
         }, 150);
         
         // Restablece cualquier modificación de estilo que hayas hecho
-        const containers = document.querySelectorAll('.swipe-container');
+        const containers = document.querySelectorAll(`.${styles['swipe-container']}`);
         containers.forEach(container => {
             container.style.touchAction = '';
         });
@@ -208,137 +218,21 @@ const Catalog = () => {
     }
 
     return (
-        <div className="container-fluid px-0">
-            {/* CSS para feedback visual de swipe */}
-            <style>
-                {`
-                    .swipe-container {
-                        position: relative;
-                        overflow: hidden;
-                        touch-action: pan-y;
-                        transition: none !important; /* Prevenir transiciones automáticas */
-                    }
-                    
-                    .swipe-instruction {
-                        position: absolute;
-                        top: 50%;
-                        left: 50%;
-                        transform: translate(-50%, -50%);
-                        background-color: rgba(0,0,0,0.6);
-                        color: white;
-                        padding: 10px 20px;
-                        border-radius: 50px;
-                        font-size: 14px;
-                        pointer-events: none;
-                        opacity: 0;
-                        transition: opacity 0.3s ease;
-                        z-index: 10;
-                        display: flex;
-                        align-items: center;
-                        gap: 8px;
-                    }
-                    
-                    .swipe-animation {
-                        animation: instructionFade 2s ease-in-out;
-                    }
-                    
-                    @keyframes instructionFade {
-                        0%, 100% { opacity: 0; }
-                        20%, 80% { opacity: 1; }
-                    }
-                    
-                    .swipe-overlay {
-                        position: absolute;
-                        top: 0;
-                        left: 0;
-                        right: 0;
-                        bottom: 0;
-                        background: linear-gradient(90deg, rgba(248,164,188,0.2) 0%, rgba(255,255,255,0) 50%, rgba(248,164,188,0.2) 100%);
-                        opacity: 0;
-                        transition: opacity 0.3s ease;
-                        pointer-events: none;
-                        z-index: 5;
-                    }
-                    
-                    .swiping .swipe-overlay {
-                        opacity: 1;
-                    }
-                    
-                    /* Ajustes para altura fija y responsive */
-                    @media (max-width: 576px) {
-                        .image-container-fixed {
-                            height: 280px !important;
-                        }
-                    }
-                    
-                    @media (min-width: 577px) and (max-width: 768px) {
-                        .image-container-fixed {
-                            height: 320px !important;
-                        }
-                    }
-                    
-                    @media (min-width: 769px) {
-                        .image-container-fixed {
-                            height: 350px !important;
-                        }
-                    }
-                    
-                    /* Estilo para transición suave entre imágenes */
-                    .image-wrapper {
-                        transition: opacity 0.3s ease;
-                    }
-                    
-                    /* Mejorar aspecto de botones de navegación */
-                    .nav-button {
-                        opacity: 0.7;
-                        transition: all 0.2s ease;
-                        z-index: 6;
-                    }
-                    
-                    .nav-button:hover {
-                        opacity: 1;
-                        transform: scale(1.1);
-                    }
-                    
-                    /* Estilo para placeholder de imagen no disponible */
-                    .image-placeholder {
-                        display: flex;
-                        flex-direction: column;
-                        align-items: center;
-                        justify-content: center;
-                        width: 100%;
-                        height: 100%;
-                        color: #6c757d;
-                        background-color: #f8f9fa;
-                        border-radius: 5px;
-                    }
-                    
-                    .image-placeholder i {
-                        font-size: 3rem;
-                        margin-bottom: 0.5rem;
-                    }
-                    
-                    .image-placeholder span {
-                        font-size: 0.9rem;
-                    }
-                `}
-            </style>
-
-            {/* Header con nombre de catálogo */}
-            <div className="bg-primary text-white py-2 px-3 mb-3 sticky-top">
-                <div className="d-flex justify-content-between align-items-center">
-                    <h2 className="fs-4 mb-0">{catalog.name}</h2>
-                    <Link to="/" className="btn btn-outline-light btn-sm">
-                        <i className="bi bi-arrow-left"></i>
-                    </Link>
-                </div>
+        <div className={`container-fluid px-0 ${styles['catalog-container']} ${styles['no-scroll']}`}>
+            {/* Header con nombre de catálogo - Versión sutil */}
+            <div className={styles['subtle-header']}>
+                <Link to="/" className={styles['back-button']}>
+                    <i className={`bi bi-arrow-left ${styles['back-icon']}`}></i>
+                </Link>
+                <h2 className={styles['catalog-title']}>{catalog.name}</h2>
+                <div style={{ width: '32px' }}></div> {/* Elemento vacío para equilibrar el diseño */}
             </div>
 
             {/* Contenedor principal del producto - Mobile First */}
-            <div className="card border-0 mb-3 mx-2">
+            <div className={`card border-0 mx-2 ${styles['card-container']}`}>
                 {/* Imagen del producto con gestos de swipe */}
                 <div
-                    className={`position-relative swipe-container image-container-fixed ${isSwiping ? 'swiping' : ''}`}
+                    className={`position-relative ${styles['swipe-container']} ${styles['image-container-fixed']} ${isSwiping ? styles.swiping : ''}`}
                     {...swipeHandlers}
                     onTouchStart={handleTouchStart}
                     onTouchMove={handleTouchMove}
@@ -355,16 +249,16 @@ const Catalog = () => {
                     // El atributo data-passive="false" es una pista para algunos frameworks
                     data-passive="false"
                 >
-                    <div className="swipe-overlay"></div>
+                    <div className={styles['swipe-overlay']}></div>
 
                     {showInstruction && (
-                        <div className="swipe-instruction swipe-animation">
+                        <div className={`${styles['swipe-instruction']} ${styles['swipe-animation']}`}>
                             <i className="bi bi-arrow-left-right"></i>
                             <span>Desliza para navegar</span>
                         </div>
                     )}
 
-                    <div className="image-wrapper" style={{
+                    <div className={styles['image-wrapper']} style={{
                         width: "100%",
                         height: "100%",
                         display: "flex",
@@ -385,7 +279,7 @@ const Catalog = () => {
                                 }}
                             />
                         ) : (
-                            <div className="image-placeholder">
+                            <div className={styles['image-placeholder']}>
                                 <i className="bi bi-image-fill"></i>
                                 <span>Imagen no disponible</span>
                             </div>
@@ -396,7 +290,7 @@ const Catalog = () => {
                     <div className="position-absolute top-50 start-0 end-0 d-flex justify-content-between px-2" style={{ transform: 'translateY(-50%)' }}>
                         <button
                             onClick={goToPrevious}
-                            className="btn btn-light btn-sm rounded-circle shadow-sm nav-button"
+                            className={`btn btn-light btn-sm rounded-circle shadow-sm ${styles['nav-button']}`}
                             aria-label="Anterior"
                             style={{ width: "30px", height: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
                         >
@@ -405,7 +299,7 @@ const Catalog = () => {
 
                         <button
                             onClick={goToNext}
-                            className="btn btn-light btn-sm rounded-circle shadow-sm nav-button"
+                            className={`btn btn-light btn-sm rounded-circle shadow-sm ${styles['nav-button']}`}
                             aria-label="Siguiente"
                             style={{ width: "30px", height: "30px", display: "flex", alignItems: "center", justifyContent: "center" }}
                         >
@@ -415,7 +309,7 @@ const Catalog = () => {
                 </div>
 
                 {/* Información del producto */}
-                <div className="card-body pt-2 pb-4">
+                <div className="card-body pt-2 pb-2">
                     <h3 className="card-title fs-5 fw-bold mt-1 mb-2">
                         {currentImage.name || 'Producto sin nombre'}
                     </h3>
@@ -426,7 +320,7 @@ const Catalog = () => {
             </div>
 
             {/* Paginación - Indicadores */}
-            <div className="d-flex justify-content-center mb-3">
+            <div className="d-flex justify-content-center mb-1">
                 {images.map((_, index) => (
                     <button
                         key={index}
@@ -439,7 +333,7 @@ const Catalog = () => {
             </div>
 
             {/* Contador */}
-            <div className="text-center text-muted small mb-4">
+            <div className="text-center text-muted small mb-1">
                 {currentImageIndex + 1} / {totalImages}
             </div>
         </div>
