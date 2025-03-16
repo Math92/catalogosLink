@@ -187,3 +187,28 @@ main {
   flex: 1;
   padding-bottom: 2rem;
 }
+
+
+.swipe-container {
+    position: relative;
+    overflow: hidden;
+    /* Permitir scroll vertical pero manejar horizontalmente */
+    touch-action: pan-y;
+    transition: none !important; /* Prevenir transiciones automáticas */
+}
+
+/* Cuando está en modo swipe, evitar todo comportamiento táctil nativo */
+.swipe-container.swiping {
+    touch-action: none;
+}
+
+/* Asegurarnos de que los elementos dentro no interfieran con el swipe */
+.swipe-container * {
+    pointer-events: none;
+}
+
+/* Pero permitir eventos en los botones de navegación */
+.nav-button {
+    pointer-events: auto !important;
+    z-index: 10;
+}
