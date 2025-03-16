@@ -14,10 +14,13 @@ const Catalog = () => {
     useEffect(() => {
         const loadCatalog = () => {
             setLoading(true);
-            const foundCatalog = getCatalog(id);
-            setCatalog(foundCatalog);
-            setCurrentImageIndex(0); // Reset al cargar un nuevo catálogo
-            setLoading(false);
+            // Simulamos un tiempo de carga para mostrar el skeleton loader
+            setTimeout(() => {
+                const foundCatalog = getCatalog(id);
+                setCatalog(foundCatalog);
+                setCurrentImageIndex(0); // Reset al cargar un nuevo catálogo
+                setLoading(false);
+            }, 600);
         };
 
         loadCatalog();
@@ -32,13 +35,7 @@ const Catalog = () => {
     }, [currentImageIndex, catalog]);
 
     if (loading) {
-        return (
-            <div className="d-flex justify-content-center my-3">
-                <div className="spinner-border text-primary" role="status">
-                    <span className="visually-hidden">Cargando...</span>
-                </div>
-            </div>
-        );
+        return <CatalogSkeletonLoader />;
     }
 
     if (!catalog) {

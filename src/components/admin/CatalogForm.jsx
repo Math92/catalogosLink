@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useLocalDB } from '../../services/LocalDB';
+import AdminSkeletonLoader from '../AdminSkeletonLoader';
 
 const CatalogForm = () => {
   const { id } = useParams();
@@ -20,23 +21,36 @@ const CatalogForm = () => {
   const [errors, setErrors] = useState({});
   const [imageErrors, setImageErrors] = useState([{}]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   
   // Determinar si es edición o creación
   const isEditMode = !!id;
   
   // Cargar datos si estamos en modo edición
   useEffect(() => {
-    if (isEditMode) {
-      const catalog = getCatalog(id);
-      if (catalog) {
-        setFormData({
-          name: catalog.name
-        });
-      } else {
-        // Si no se encuentra el catálogo, redirigir a la lista
-        navigate('/admin/catalogs');
-      }
-    }
+    const loadData = () => {
+      setIsLoading(true);
+      
+      // Simulamos tiempo de carga para mostrar el skeleton loader
+      setTimeout(() => {
+        if (isEditMode) {
+          const catalog = getCatalog(id);
+          if (catalog) {
+            setFormData({
+              name: catalog.name
+            });
+          } else {
+            // Si no se encuentra el catálogo, redirigir a la lista
+            navigate('/admin/catalogs');
+            return;
+          }
+        }
+        
+        setIsLoading(false);
+      }, 600);
+    };
+    
+    loadData();
   }, [id, isEditMode, getCatalog, navigate]);
   
   // Manejar cambios en el formulario
@@ -212,6 +226,10 @@ const CatalogForm = () => {
       setIsSubmitting(false);
     }
   };
+  
+  if (isLoading) {
+    return <AdminSkeletonLoader />;
+  }
   
   return (
     <div className="catalog-form-container">
@@ -461,7 +479,8 @@ const CatalogForm = () => {
                     <div className="image-preview">
                       <img 
                         src={url} 
-                        alt="Vista previa" 
+                        alt="Vista previa"
+                        loading="lazy"
                         onError={(e) => {
                           e.target.onerror = null;
                           e.target.src = 'https://via.placeholder.com/300x200?text=Imagen+no+disponible';

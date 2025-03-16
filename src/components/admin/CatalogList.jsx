@@ -1,35 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { useLocalDB } from '../../services/LocalDB';
+import AdminSkeletonLoader from '../AdminSkeletonLoader';
 
 const CatalogList = () => {
   const { catalogs, deleteCatalog } = useLocalDB();
   const [isLoading, setIsLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredCatalogs, setFilteredCatalogs] = useState([]);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   
-  // Efecto para cargar y filtrar catálogos
   useEffect(() => {
-    // Aplicar filtro de búsqueda
-    const filtered = catalogs.filter(catalog => 
-      catalog.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredCatalogs(filtered);
-    
-    // Simular tiempo de carga
+    // Simulamos tiempo de carga para mostrar el skeleton loader
     const timer = setTimeout(() => {
       setIsLoading(false);
-    }, 300);
+    }, 600);
     
     return () => clearTimeout(timer);
-  }, [catalogs, searchTerm]);
+  }, []);
   
-  // Manejador para eliminar catálogo
-  const handleDelete = (catalogId) => {
-    deleteCatalog(catalogId);
+  // Filtramos los catálogos basados en el término de búsqueda
+  const filteredCatalogs = catalogs.filter(catalog => 
+    catalog.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+  
+  // Función para manejar la eliminación de catálogos
+  const handleDelete = (id) => {
+    deleteCatalog(id);
     setDeleteConfirm(null);
   };
+  
+  if (isLoading) {
+    return <AdminSkeletonLoader />;
+  }
   
   return (
     <div className="catalog-list-container">
@@ -328,35 +330,29 @@ const CatalogList = () => {
       </div>
       
       {/* Lista de catálogos */}
-      {isLoading ? (
-        <div className="d-flex justify-content-center my-5">
-          <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Cargando catálogos...</span>
-          </div>
-        </div>
-      ) : (
-        <>
-          {filteredCatalogs.length === 0 && (
-            <div className="empty-state">
-              <i className="bi bi-collection"></i>
-              <h4>No hay catálogos</h4>
-              <p className="text-muted">
-                {searchTerm 
-                  ? `No se encontraron catálogos que coincidan con "${searchTerm}"`
-                  : 'Comienza creando un nuevo catálogo para tus productos.'}
-              </p>
-              {searchTerm && (
-                <button 
-                  className="btn btn-outline-secondary mt-2"
-                  onClick={() => setSearchTerm('')}
-                >
-                  <i className="bi bi-x-circle me-1"></i>
-                  Limpiar búsqueda
-                </button>
-              )}
-            </div>
+      {filteredCatalogs.length === 0 && (
+        <div className="empty-state">
+          <i className="bi bi-collection"></i>
+          <h4>No hay catálogos</h4>
+          <p className="text-muted">
+            {searchTerm 
+              ? `No se encontraron catálogos que coincidan con "${searchTerm}"`
+              : 'Comienza creando un nuevo catálogo para tus productos.'}
+          </p>
+          {searchTerm && (
+            <button 
+              className="btn btn-outline-secondary mt-2"
+              onClick={() => setSearchTerm('')}
+            >
+              <i className="bi bi-x-circle me-1"></i>
+              Limpiar búsqueda
+            </button>
           )}
-          
+        </div>
+      )}
+      
+      {filteredCatalogs.length > 0 && (
+        <>
           {filteredCatalogs.map((catalog) => (
             <div key={catalog.id} className="catalog-card">
               <div className="catalog-header">

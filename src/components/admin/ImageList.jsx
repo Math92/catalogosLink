@@ -1,67 +1,56 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useParams, useNavigate } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useLocalDB } from '../../services/LocalDB';
+import AdminSkeletonLoader from '../AdminSkeletonLoader';
 
 const ImageList = () => {
   const { catalogId } = useParams();
   const navigate = useNavigate();
   const { getCatalog, deleteImage } = useLocalDB();
+  
   const [catalog, setCatalog] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredImages, setFilteredImages] = useState([]);
   const [deleteConfirm, setDeleteConfirm] = useState(null);
   
-  // Cargar catálogo y filtrar imágenes
   useEffect(() => {
     const loadCatalog = () => {
-      const foundCatalog = getCatalog(catalogId);
-      if (!foundCatalog) {
-        navigate('/admin/catalogs');
-        return;
-      }
-      
-      setCatalog(foundCatalog);
-      
-      // Aplicar filtro de búsqueda
-      const filtered = (foundCatalog.images || []).filter(image => 
-        image.name.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-      setFilteredImages(filtered);
-      
-      // Simular tiempo de carga
-      const timer = setTimeout(() => {
-        setIsLoading(false);
-      }, 300);
-      
-      return () => clearTimeout(timer);
+      setLoading(true);
+      // Simulamos tiempo de carga para mostrar el skeleton loader
+      setTimeout(() => {
+        const foundCatalog = getCatalog(catalogId);
+        
+        if (!foundCatalog) {
+          navigate('/admin/catalogs');
+          return;
+        }
+        
+        setCatalog(foundCatalog);
+        setLoading(false);
+      }, 600);
     };
     
-    setIsLoading(true);
     loadCatalog();
-  }, [catalogId, getCatalog, navigate, searchTerm]);
+  }, [catalogId, getCatalog, navigate]);
   
-  // Manejador para eliminar imagen
+  // Filtramos las imágenes basadas en el término de búsqueda
+  const filteredImages = catalog?.images.filter(image => 
+    image.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    image.price.toString().includes(searchTerm)
+  ) || [];
+  
+  // Función para manejar la eliminación de imágenes
   const handleDelete = (imageId) => {
     deleteImage(catalogId, imageId);
     setDeleteConfirm(null);
-    // Actualizar la lista filtrada después de eliminar
+    
+    // Actualizamos el catálogo después de eliminar
     const updatedCatalog = getCatalog(catalogId);
     setCatalog(updatedCatalog);
-    const filtered = (updatedCatalog.images || []).filter(image => 
-      image.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    setFilteredImages(filtered);
   };
   
-  if (isLoading) {
-    return (
-      <div className="d-flex justify-content-center my-5">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Cargando imágenes...</span>
-        </div>
-      </div>
-    );
+  if (loading) {
+    return <AdminSkeletonLoader />;
   }
   
   if (!catalog) {
@@ -411,7 +400,14 @@ const ImageList = () => {
                 Imagen
               </div>
               <div className="image-preview">
-                <img src={image.imageUrl} alt={image.name} />
+                <img 
+                  src={image.imageUrl} 
+                  alt={image.name} 
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = 'https://via.placeholder.com/300x200?text=Imagen+no+disponible';
+                  }}
+                />
               </div>
               <div className="image-card-body">
                 <div className="image-name">{image.name}</div>

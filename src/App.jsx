@@ -1,5 +1,6 @@
+// App.jsx con corrección para acceso a la ruta admin
 import React from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import Header from './components/Header';
 import Home from './views/Home';
 import Catalog from './views/Catalog';

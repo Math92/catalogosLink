@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useLocalDB } from '../../services/LocalDB';
+import AdminSkeletonLoader from '../AdminSkeletonLoader';
 
 const ImageForm = () => {
   const { catalogId, imageId } = useParams();
@@ -27,34 +28,34 @@ const ImageForm = () => {
     const loadData = async () => {
       setIsLoading(true);
       
-      const foundCatalog = getCatalog(catalogId);
-      
-      if (!foundCatalog) {
-        navigate('/admin/catalogs');
-        return;
-      }
-      
-      setCatalog(foundCatalog);
-      
-      if (isEditMode) {
-        const image = foundCatalog.images?.find(img => img.id === imageId);
+      // Simulamos tiempo de carga para mostrar el skeleton loader
+      setTimeout(() => {
+        const foundCatalog = getCatalog(catalogId);
         
-        if (!image) {
-          navigate(`/admin/catalogs/${catalogId}/images`);
+        if (!foundCatalog) {
+          navigate('/admin/catalogs');
           return;
         }
         
-        setFormData({
-          name: image.name,
-          price: image.price.toString(),
-          imageUrl: image.imageUrl
-        });
-      }
-      
-      // Simular un pequeño retraso para una mejor experiencia de usuario
-      setTimeout(() => {
+        setCatalog(foundCatalog);
+        
+        if (isEditMode) {
+          const image = foundCatalog.images?.find(img => img.id === imageId);
+          
+          if (!image) {
+            navigate(`/admin/catalogs/${catalogId}/images`);
+            return;
+          }
+          
+          setFormData({
+            name: image.name,
+            price: image.price.toString(),
+            imageUrl: image.imageUrl
+          });
+        }
+        
         setIsLoading(false);
-      }, 300);
+      }, 600);
     };
     
     loadData();
@@ -139,13 +140,7 @@ const ImageForm = () => {
   };
   
   if (isLoading) {
-    return (
-      <div className="d-flex justify-content-center my-4 py-4">
-        <div className="spinner-border text-primary" role="status">
-          <span className="visually-hidden">Cargando formulario...</span>
-        </div>
-      </div>
-    );
+    return <AdminSkeletonLoader />;
   }
   
   return (
@@ -335,6 +330,7 @@ const ImageForm = () => {
                   <img 
                     src={formData.imageUrl} 
                     alt="Vista previa" 
+                    loading="lazy"
                     onError={(e) => {
                       e.target.onerror = null;
                       e.target.src = 'https://via.placeholder.com/300x200?text=Imagen+no+disponible';
