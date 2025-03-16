@@ -229,7 +229,7 @@ const Catalog = () => {
             </div>
 
             {/* Contenedor principal del producto - Mobile First */}
-            <div className={`card border-0 mx-2 ${styles['card-container']}`}>
+            <div className={`card border-0 mx-2 ${styles['card-container']}`} style={{ marginTop: '40px' }}>
                 {/* Imagen del producto con gestos de swipe */}
                 <div
                     className={`position-relative ${styles['swipe-container']} ${styles['image-container-fixed']} ${isSwiping ? styles.swiping : ''}`}
