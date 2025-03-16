@@ -119,15 +119,20 @@ const Catalog = () => {
                     <img
                         src={currentImage.imageUrl}
                         alt={currentImage.name}
-                        className={`img-fluid w-100 ${imageLoading ? 'd-none' : ''}`}
-                        style={{ objectFit: 'contain', maxHeight: '70vh' }}
+                        className={`img-fluid ${imageLoading ? 'd-none' : ''}`}
+                        style={{
+                            maxHeight: '70vh',
+                            width: '100%',
+                            height: 'auto',
+                            minHeight: '200px',
+                            objectFit: 'contain'
+                        }}
+                        loading="lazy"
+                        decoding="async"
                         onLoad={handleImageLoad}
                         onError={(e) => {
-                            console.error('Error cargando imagen:', e);
-                            setImageLoading(false);
-                            // Usa una imagen de respaldo
-                            e.target.onerror = null;
                             e.target.src = 'https://via.placeholder.com/400x300?text=Imagen+no+disponible';
+                            setImageLoading(false);
                         }}
                     />
 
